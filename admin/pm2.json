@@ -1,0 +1,12 @@
+{
+    "apps": [
+        {
+            "name": "Sameem Admin Server (3014)",
+            "script": "node server.js",
+            "instances": "1",
+            "autorestart": true,
+            "max_restarts": 100,
+            "time": true
+        }
+    ]
+}

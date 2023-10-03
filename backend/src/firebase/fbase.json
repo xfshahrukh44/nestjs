@@ -1,0 +1,13 @@
+{
+    "type": "service_account",
+    "project_id": "texas-christan-app",
+    "private_key_id": "5215d18940f2bc30662affd9f6d1c59e906fe9ca",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDRhb/1BbRcZ+wC\nFflZnFDEwMrsNSd1lX+eqATIZmTFxD6Pc1PYAFN6EHnt1PYFs28heNERJ7vE3aUo\ng3L82y7XAJU534Y4KxtsKPhHQ+oCZTzZFv4Po6uRIGEJLV05ZuL6i6cEc94xzxuu\nZOMSWY1ks4VLrjAmAXchJEGfgsB6PxsiLbiHWiFI7Za8aGV/sedW7Qc9+/5eIt4y\nlyXl037VtyQ5picXgVDCDK3d6Q8Xok7EJP8hyMVeyiCj/YAte/Siml90CYFjc7SQ\ncbygeTG09ubnix8GOMCG75XlF/lMesQcxl0Ekq2PlS50WRKpwUZu0zb7P4syaILD\nmi3F+R1lAgMBAAECggEAAz775FiRnMTiESjfU2tqjOx3uFpydriO4O8KyUKyLlDb\nWe7tePE4Wdxw0dB00fh1Bk2633XVdjgA27R9pDvjvoz8bYhwVI/GaFHngXh54vjy\njQ0gI9njSeejLo3iCIZMNJl+nZZgoODr4DMhRCLYX/EFZaYYijOHnEnVgm/Mz5gC\nLE/wT3aXsy7PSF0XEphysl98ZnpToap9AxPA3dbg4Mc62IHjwewFhmudX/W7IDNL\ns5Yii2jXdESUP9zE+KCZOFsSxxC4QeRpE5d4h5/u0WSPBHjIJ3wOq78EXyeP2+gb\nVveGT7uvYVyowOmOEa3VzTD2sbRMNJ9SN45m2R/XwQKBgQD04Ok4Ex44XLTCGf6z\nMeNSQbbPcr4O1x5Id9g1ebHKdpeL/aRASY7cE2iU7nj+tyPsuGB5ZIp9KKJts6qL\n1Oz5LrEeHVqi1DMjo11TWQ6AljIKuAAoFKHkBrN1UtwKeuVFXOVwh/MXg1zEYLkT\n06qWFCCyuGmuzAQRAUGRvhr2/QKBgQDbCcUZ5vq77nJeK/voggkWeQLBd9q8QxRh\n5kGPCITdTchzfTVwLlFlx2YfxCDJy/btgXiuXRU39pvi5qd2GEnvnS/nNTEkKY7R\nztqO0qVpWRXGlBxfQo4U3EImEyzirqFIhat8OOJffauxym2oS5txOudTWMXqSZmv\nZRGS58GwiQKBgBWC0FnhrAztb9+BIxOgtURbi3CLttBc60cYaADCkPClHEjq3gvb\nqlYAynYSwMQ3WEuKIsdnIpc+A465cqjX6n01Mc/gaj7VfyyJREB3GUQIbZrtcO4U\naeg7Anay8atmAk/mii0pdBxDqNmDWZ65QEnwuLKaaoY1W8IWpyjjV0ENAoGBAIDt\nz0bf3tagFFG6Mh057X9821Jl6irGkUjO7+fxa8OX9VWFbd8KZH80T7iDCYm+tSo3\n+4Em6UZ3smpsukWZJmwUag3+EV7n11lIGP3Yn+TSuy6YH9syoc9Fluoyf0ku4WB+\nzeHg2d67akTMkp9tYaHUujUlG9o8WGoVY7LFGA2BAoGALSdn4zJsi83oOwey9ATu\nrVxryNQM8MU1TQBi4P1hchOhZi/QDBr0wnkdxl1LnwKbrxa80RtSw/8SEpzbTZP5\nTt7vp7bRPlTMr8C4gemJ/QAe53hBh6CKnh+zkLRGK1VfyNSK9osDnXX7Pm6epvtO\ntQeg/089inT6opc7Eo8gbuI=\n-----END PRIVATE KEY-----\n",
+    "client_email": "firebase-adminsdk-n3khg@texas-christan-app.iam.gserviceaccount.com",
+    "client_id": "107703977575623561351",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-n3khg%40texas-christan-app.iam.gserviceaccount.com",
+    "universe_domain": "googleapis.com"
+}
