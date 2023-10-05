@@ -4,6 +4,7 @@ import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
 import {ApiBearerAuth, ApiQuery, ApiTags} from "@nestjs/swagger";
 import {AuthGuard} from "../auth/auth.guard";
+import {AdminGuard} from "../auth/admin.guard";
 
 @ApiTags('Contacts')
 @ApiBearerAuth()
@@ -48,6 +49,7 @@ export class ContactsController {
       }
   }
 
+  @UseGuards(AdminGuard)
   @Post(':id')
   async update(@Param('id') id: string, @Body() updateContactDto: UpdateContactDto) {
       let contact = await this.contactsService.findOne(id);
@@ -68,6 +70,7 @@ export class ContactsController {
       }
   }
 
+  @UseGuards(AdminGuard)
   @Delete(':id')
   async remove(@Param('id') id: string) {
       let contact = await this.contactsService.findOne(id);

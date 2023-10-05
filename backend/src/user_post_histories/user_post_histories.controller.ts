@@ -1,4 +1,4 @@
-import {Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Inject} from '@nestjs/common';
+import {Controller, Get, Post, Body, Param, Delete, UseGuards, Query, Inject} from '@nestjs/common';
 import { UserPostHistoriesService } from './user_post_histories.service';
 import { CreateUserPostHistoryDto } from './dto/create-user_post_history.dto';
 import { UpdateUserPostHistoryDto } from './dto/update-user_post_history.dto';
@@ -8,6 +8,7 @@ import {UsersService} from "../users/users.service";
 import {PostsService} from "../posts/posts.service";
 import {Model} from "mongoose";
 import {UserPostHistoryInterface} from "./user_post_histories.schema";
+import {AdminGuard} from "../auth/admin.guard";
 
 @ApiTags('User Post Histories')
 @ApiBearerAuth()
@@ -95,7 +96,8 @@ import {UserPostHistoryInterface} from "./user_post_histories.schema";
         }
     }
 
-    @Patch(':id')
+    @UseGuards(AdminGuard)
+    @Post(':id')
     async update(@Param('id') id: string, @Body() updateUserPostHistoryDto: UpdateUserPostHistoryDto) {
         let user_post_history = await this.userPostHistoriesService.findOne(id);
         if (user_post_history.error) {

@@ -42,6 +42,7 @@ import {PostInterface} from "./posts.schema";
 import {CategoryPostInterface} from "../category-posts/category-posts.schema";
 import {CreateCategoryPostDto} from "../category-posts/dto/create-category-post.dto";
 import {UpdateUserDto} from "../users/dto/update-user.dto";
+import {AdminGuard} from "../auth/admin.guard";
 
 @Injectable()
 export class MaxFileSizeInterceptor implements NestInterceptor {
@@ -602,6 +603,7 @@ export class PostsController {
         }
     }
 
+    @UseGuards(AdminGuard)
     @Post(':id/mark-as-featured')
     async markAsFeatured (@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
         let post = await this.postsService.findOne(id);

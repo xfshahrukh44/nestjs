@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Inject, Injectable} from '@nestjs/common';
 import { UsersService } from "../users/users.service";
 import * as bcrypt from 'bcrypt';
 import {JwtService} from "@nestjs/jwt";
@@ -104,7 +104,7 @@ export class AuthService {
     }
 
     async getUserByEmail (email: string): Promise<any> {
-        try {
+        // try {
             const user = await this.usersService.findOneByEmail(email);
 
             if (user.error) {
@@ -113,13 +113,13 @@ export class AuthService {
 
             delete user.password;
             return user;
-        } catch (error) {
-            if (error instanceof MongooseError) {
-                return {
-                    error: error.message
-                };
-            }
-        }
+        // } catch (error) {
+        //     if (error instanceof MongooseError) {
+        //         return {
+        //             error: error.message
+        //         };
+        //     }
+        // }
     }
 
     async forgotPassword (forgotPasswordDto: ForgotPasswordDto): Promise<any> {

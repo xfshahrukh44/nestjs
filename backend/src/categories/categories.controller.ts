@@ -10,6 +10,7 @@ import {TranslationsService} from "../translations/translations.service";
 import {UpdateTranslationDto} from "../translations/dto/update-translation.dto";
 import {GetCategoryTranslationDto} from "./dto/get-category-translation.dto";
 import mongoose from "mongoose";
+import {AdminGuard} from "../auth/admin.guard";
 
 @ApiTags('Categories')
 @ApiBearerAuth()
@@ -24,6 +25,7 @@ export class CategoriesController {
       this.translated_columns = ['name'];
     }
 
+    @UseGuards(AdminGuard)
     @Post()
     async create(@Body() createCategoryDto: CreateCategoryDto) {
         if (createCategoryDto.parent_id) {
@@ -216,6 +218,7 @@ export class CategoriesController {
         }
     }
 
+    @UseGuards(AdminGuard)
     @Post(':id')
     async update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
         if (updateCategoryDto.parent_id) {
@@ -284,6 +287,7 @@ export class CategoriesController {
         }
     }
 
+    @UseGuards(AdminGuard)
     @Delete(':id')
     async remove(@Param('id') id: string) {
         let res = await this.categoriesService.remove(id);

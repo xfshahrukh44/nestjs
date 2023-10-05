@@ -68,8 +68,8 @@ export class UsersService {
         }
     }
 
-    async findOneByEmail(email: string, args?): Promise<any> {
-        try {
+    async findOneByEmail(email: string, args = []): Promise<any> {
+        // try {
             let res =  await this.userModel.aggregate([
                 { $match: { email: email } },
                 { $limit: 1 },
@@ -80,13 +80,14 @@ export class UsersService {
             return (res.length == 0) ? {
                 error: 'User Not Found'
             } : res[0];
-        } catch (error) {
-            if (error instanceof MongooseError) {
-                return {
-                    error: 'User Not Found'
-                };
-            }
-        }
+        // } catch (error) {
+        //     console.log(error)
+        //     if (error instanceof MongooseError) {
+        //         return {
+        //             error: 'User Not Found'
+        //         };
+        //     }
+        // }
     }
 
     async update(id: string, updateUserDto: UpdateUserDto): Promise<any> {

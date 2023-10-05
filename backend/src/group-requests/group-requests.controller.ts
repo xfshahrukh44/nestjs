@@ -15,6 +15,7 @@ import mongoose, {Model} from "mongoose";
 import {GroupRequestInterface} from "./group-requests.schema";
 import {GroupInterface} from "../groups/groups.schema";
 import {UpdateGroupDto} from "../groups/dto/update-group.dto";
+import {AdminGuard} from "../auth/admin.guard";
 
 @ApiTags('Group Requests')
 @ApiBearerAuth()
@@ -77,6 +78,7 @@ export class GroupRequestsController {
 
   @ApiQuery({ name: 'page', required: false})
   @ApiQuery({ name: 'limit', required: false})
+  @UseGuards(AdminGuard)
   @Get()
   async findAll(@Query('page') page?: number, @Query('limit') limit?: number) {
       let res = await this.groupRequestsService.findAll(page, limit);
@@ -88,6 +90,7 @@ export class GroupRequestsController {
       }
   }
 
+  @UseGuards(AdminGuard)
   @Get(':id')
   async findOne(@Param('id') id: string) {
       let res = await this.groupRequestsService.findOne(id);
@@ -99,6 +102,7 @@ export class GroupRequestsController {
       }
   }
 
+  @UseGuards(AdminGuard)
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateGroupRequestDto: UpdateGroupRequestDto) {
       let group_request = await this.groupRequestsService.findOne(id);
@@ -119,6 +123,7 @@ export class GroupRequestsController {
       }
   }
 
+  @UseGuards(AdminGuard)
   @Delete(':id')
   async remove(@Param('id') id: string) {
       let group_request = await this.groupRequestsService.findOne(id);
@@ -139,6 +144,7 @@ export class GroupRequestsController {
       }
   }
 
+  @UseGuards(AdminGuard)
   @Post('accept')
   async accept(@Body() acceptGroupRequestDto: AcceptGroupRequestDto) {
       let group_request = await this.groupRequestsService.findOne(acceptGroupRequestDto.id);

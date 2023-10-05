@@ -27,6 +27,7 @@ import {map} from "rxjs/operators";
 import {CreateTranslationDto} from "../translations/dto/create-translation.dto";
 import {TranslationsService} from "../translations/translations.service";
 import {UpdateTranslationDto} from "../translations/dto/update-translation.dto";
+import {AdminGuard} from "../auth/admin.guard";
 
 @Injectable()
 export class MaxFileSizeInterceptor implements NestInterceptor {
@@ -94,6 +95,7 @@ export class QuotationsController {
             }
         }
     })
+    @UseGuards(AdminGuard)
     @Post()
     async create(@Body() createQuotationDto: CreateQuotationDto, @UploadedFiles() files: {
         audio?: Express.Multer.File[],
@@ -259,6 +261,7 @@ export class QuotationsController {
             }
         }
     })
+    @UseGuards(AdminGuard)
     @Post(':id')
     async update(@Param('id') id: string, @Body() updateQuotationDto: UpdateQuotationDto, @UploadedFiles() files: {
         audio?: Express.Multer.File[],
@@ -310,6 +313,7 @@ export class QuotationsController {
         }
     }
 
+    @UseGuards(AdminGuard)
     @Delete(':id')
     async remove(@Param('id') id: string) {
         let quotation = await this.quotationsService.findOne(id);

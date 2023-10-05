@@ -9,6 +9,7 @@ import {CreateTranslationDto} from "../translations/dto/create-translation.dto";
 import {UpdateTranslationDto} from "../translations/dto/update-translation.dto";
 import {TranslationsService} from "../translations/translations.service";
 import mongoose from "mongoose";
+import {AdminGuard} from "../auth/admin.guard";
 
 @ApiTags('FAQs')
 @ApiBearerAuth()
@@ -27,6 +28,7 @@ export class FaqController {
       };
   }
 
+    @UseGuards(AdminGuard)
     @Post()
     async create(@Body() createFaqDto: CreateFaqDto) {
         let question_ar = createFaqDto.question_ar
@@ -138,6 +140,7 @@ export class FaqController {
         }
     }
 
+    @UseGuards(AdminGuard)
     @Post(':id')
     async update(@Param('id') id: string, @Body() updateFaqDto: UpdateFaqDto) {
         let faq = await this.faqService.findOne(id);
@@ -176,6 +179,7 @@ export class FaqController {
         }
     }
 
+    @UseGuards(AdminGuard)
     @Delete(':id')
     async remove(@Param('id') id: string) {
         let faq = await this.faqService.findOne(id);

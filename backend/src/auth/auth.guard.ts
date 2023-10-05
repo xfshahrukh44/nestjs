@@ -1,19 +1,14 @@
-import {
-    CanActivate,
-    ExecutionContext, Inject,
-    Injectable,
-    UnauthorizedException,
-} from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { jwtConstants } from './constants';
-import { Request } from 'express';
+import {CanActivate, ExecutionContext, Inject, Injectable, UnauthorizedException,} from '@nestjs/common';
+import {JwtService} from '@nestjs/jwt';
+import {jwtConstants} from './constants';
+import {Request} from 'express';
 import {UsersService} from "../users/users.service";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
     constructor(
-        private usersService: UsersService,
         @Inject('USER_MODEL')
+        private usersService: UsersService,
         private jwtService: JwtService,
     ) {}
 
@@ -24,16 +19,15 @@ export class AuthGuard implements CanActivate {
             throw new UnauthorizedException();
         }
         try {
-            const payload = await this.jwtService.verifyAsync(
+            // so that we can access it in our route handlers
+            request['user'] = await this.jwtService.verifyAsync(
                 token,
                 {
                     secret: jwtConstants.secret
                 }
             );
-            // 💡 We're assigning the payload to the request object here
-            // so that we can access it in our route handlers
-            request['user'] = payload;
-        } catch {
+        } catch (e) {
+            console.log(e);
             throw new UnauthorizedException();
         }
 

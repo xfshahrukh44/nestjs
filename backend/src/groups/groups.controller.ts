@@ -10,6 +10,7 @@ import {UsersService} from "../users/users.service";
 import {IsNull} from "typeorm";
 import {Model} from "mongoose";
 import {GroupInterface} from "./groups.schema";
+import {AdminGuard} from "../auth/admin.guard";
 
 @ApiTags('Groups')
 @ApiBearerAuth()
@@ -139,6 +140,7 @@ export class GroupsController {
       }
   }
 
+  @UseGuards(AdminGuard)
   @Post('user/add')
   async addUser(@Body() addUserDto: AddUserDto) {
       let group = await this.groupsService.findOne(addUserDto.group_id);
