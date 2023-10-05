@@ -11,6 +11,8 @@ import {IsNull} from "typeorm";
 import {Model} from "mongoose";
 import {GroupInterface} from "./groups.schema";
 import {AdminGuard} from "../auth/admin.guard";
+import {CACHE_MANAGER} from "@nestjs/cache-manager";
+import {Cache} from "cache-manager";
 
 @ApiTags('Groups')
 @ApiBearerAuth()
@@ -23,6 +25,8 @@ export class GroupsController {
       private readonly usersService: UsersService,
       @Inject('GROUP_MODEL')
       private groupModel: Model<GroupInterface>,
+      @Inject(CACHE_MANAGER)
+      private cacheManager: Cache
   ) {}
 
   @Post()
@@ -41,7 +45,13 @@ export class GroupsController {
   @ApiQuery({ name: 'page', required: false})
   @ApiQuery({ name: 'limit', required: false})
   async findAll(@Query('page') page?: number, @Query('limit') limit?: number) {
-      let res = await this.groupsService.findAll(page, limit);
+      let res: any = await this.cacheManager.get('groups');
+
+      if (res == null) {
+          res = await this.groupsService.findAll(page, limit);
+
+          await this.cacheManager.set('group', res, 1000);
+      }
 
       return {
           success: true,

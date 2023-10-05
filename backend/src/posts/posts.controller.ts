@@ -43,6 +43,8 @@ import {CategoryPostInterface} from "../category-posts/category-posts.schema";
 import {CreateCategoryPostDto} from "../category-posts/dto/create-category-post.dto";
 import {UpdateUserDto} from "../users/dto/update-user.dto";
 import {AdminGuard} from "../auth/admin.guard";
+import {CACHE_MANAGER} from "@nestjs/cache-manager";
+import {Cache} from "cache-manager";
 
 @Injectable()
 export class MaxFileSizeInterceptor implements NestInterceptor {
@@ -101,6 +103,8 @@ export class PostsController {
         private userModel: Model<UserInterface>,
         @Inject('CATEGORY_POST_MODEL')
         private categoryPostModel: Model<CategoryPostInterface>,
+        @Inject(CACHE_MANAGER)
+        private cacheManager: Cache
     ) {
         this.translated_columns = ['title', 'description'];
         this.languages = ['en', 'ar'];
@@ -304,19 +308,24 @@ export class PostsController {
     @ApiHeader({ name: 'lang', required: false})
     @Get('get/featured-posts')
     async findAllFeatured(@Headers('lang') lang?: number) {
+        let res: any = await this.cacheManager.get('featured-posts');
 
-        let res = await this.postsService.findAll(1, 10, [
-            { $match: { is_featured: 1 } }
-        ]);
+        if (res == null) {
+            res = await this.postsService.findAll(1, 10, [
+                { $match: { is_featured: 1 } }
+            ]);
 
-        //translation work
-        let language_id = lang ?? 1;
-        if(res.data) {
-            //get preferred language
-            res.data = await this.addPreferredTranslationToArray(res.data, language_id);
+            //translation work
+            let language_id = lang ?? 1;
+            if(res.data) {
+                //get preferred language
+                res.data = await this.addPreferredTranslationToArray(res.data, language_id);
 
-            //get translated columns
-            res.data = await this.addTranslatedColumnsToArray(res.data);
+                //get translated columns
+                res.data = await this.addTranslatedColumnsToArray(res.data);
+            }
+
+            await this.cacheManager.set('featured-posts', res, 1000);
         }
 
         return {
@@ -616,6 +625,11 @@ export class PostsController {
         }
 
         await this.postsService.update(id, updatePostDto);
+
+        //caching
+        await this.cacheManager.set('featured-posts', await this.postsService.findAll(1, 10, [
+            { $match: { is_featured: 1 } }
+        ]), 1000);
 
         return {
             success: true,

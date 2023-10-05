@@ -1,4 +1,4 @@
-import {Controller, Get, Post, Body, Param, Delete, Query, UseGuards, Headers} from '@nestjs/common';
+import {Controller, Get, Post, Body, Param, Delete, Query, UseGuards, Headers, Inject} from '@nestjs/common';
 import { FaqService } from './faq.service';
 import { CreateFaqDto } from './dto/create-faq.dto';
 import { UpdateFaqDto } from './dto/update-faq.dto';
@@ -10,6 +10,8 @@ import {UpdateTranslationDto} from "../translations/dto/update-translation.dto";
 import {TranslationsService} from "../translations/translations.service";
 import mongoose from "mongoose";
 import {AdminGuard} from "../auth/admin.guard";
+import {CACHE_MANAGER} from "@nestjs/cache-manager";
+import {Cache} from "cache-manager";
 
 @ApiTags('FAQs')
 @ApiBearerAuth()
@@ -19,7 +21,12 @@ export class FaqController {
     private readonly translated_columns: string[];
     private readonly languages: string[];
     private readonly lang_ids: {};
-  constructor(private readonly faqService: FaqService, private readonly translationsService: TranslationsService) {
+  constructor(
+      private readonly faqService: FaqService,
+      private readonly translationsService: TranslationsService,
+      @Inject(CACHE_MANAGER)
+      private cacheManager: Cache
+  ) {
       this.translated_columns = ['question', 'answer'];
       this.languages = ['en', 'ar'];
       this.lang_ids = {
@@ -86,28 +93,34 @@ export class FaqController {
     @ApiQuery({ name: 'limit', required: false})
     @ApiHeader({ name: 'lang', required: false})
     async findAll(@Query('page') page?: number, @Query('limit') limit?: number, @Headers('lang') lang?: number) {
-        let res = await this.faqService.findAll(page, limit);
+        let res: any = await this.cacheManager.get('faqs');
 
-        //translation work
-        let language_id = lang ?? 1;
-        if(res.data) {
-            //get preferred language
-            res.data = await Promise.all(
-                res.data.map(async (faq) => {
-                    //get preferred language translation
-                    faq = await this.addPreferredTranslation(faq, language_id);
-                    return faq;
-                })
-            );
+        if (res == null) {
+            res = await this.faqService.findAll(page, limit);
 
-            //get translated columns
-            res.data = await Promise.all(
-                res.data.map(async (faq) => {
-                    //add translated columns
-                    faq = await this.addTranslatedColumns(faq);
-                    return faq;
-                })
-            );
+            //translation work
+            let language_id = lang ?? 1;
+            if(res.data) {
+                //get preferred language
+                res.data = await Promise.all(
+                    res.data.map(async (faq) => {
+                        //get preferred language translation
+                        faq = await this.addPreferredTranslation(faq, language_id);
+                        return faq;
+                    })
+                );
+
+                //get translated columns
+                res.data = await Promise.all(
+                    res.data.map(async (faq) => {
+                        //add translated columns
+                        faq = await this.addTranslatedColumns(faq);
+                        return faq;
+                    })
+                );
+            }
+
+            await this.cacheManager.set('faqs', res, 1000);
         }
 
         return {

@@ -1,16 +1,17 @@
-import {Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Headers} from '@nestjs/common';
+import {Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Headers, Inject} from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import {ApiBearerAuth, ApiHeader, ApiQuery, ApiTags} from "@nestjs/swagger";
 import {AuthGuard} from "../auth/auth.guard";
-import {IsNull} from "typeorm";
 import {CreateTranslationDto} from "../translations/dto/create-translation.dto";
 import {TranslationsService} from "../translations/translations.service";
 import {UpdateTranslationDto} from "../translations/dto/update-translation.dto";
 import {GetCategoryTranslationDto} from "./dto/get-category-translation.dto";
 import mongoose from "mongoose";
 import {AdminGuard} from "../auth/admin.guard";
+import {CACHE_MANAGER} from "@nestjs/cache-manager";
+import {Cache} from "cache-manager";
 
 @ApiTags('Categories')
 @ApiBearerAuth()
@@ -21,6 +22,8 @@ export class CategoriesController {
     constructor(
       private readonly categoriesService: CategoriesService,
       private readonly translationsService: TranslationsService,
+      @Inject(CACHE_MANAGER)
+      private cacheManager: Cache
     ) {
       this.translated_columns = ['name'];
     }
@@ -130,54 +133,60 @@ export class CategoriesController {
     @Get('get-menu')
     @ApiHeader({ name: 'lang', required: false})
     async getMenu(@Headers('lang') lang?: number) {
-        let res = await this.categoriesService.findAll(1, 10000, {
-            parent_id: null,
-            is_active: true
-        });
+        let res: any = await this.cacheManager.get('category-menu');
 
-        //translation work
-        if(res.data) {
-            let language_id = lang ?? 1;
-            res.data = await Promise.all(
-                res.data.map(async (category) => {
-                    for (const key of this.translated_columns) {
-                        let record = await this.translationsService.findOneWhere([
-                            {
-                                $match: {
-                                    module: 'category',
-                                    module_id: new mongoose.Types.ObjectId(category.id),
-                                    language_id: language_id,
-                                    key: key,
-                                }
-                            }
-                        ]);
+        if (res == null) {
+            res = await this.categoriesService.findAll(1, 10000, {
+                parent_id: null,
+                is_active: true
+            });
 
-                        category[key] = record.value ?? category[key];
-                    }
-
-                    category.children = await Promise.all(
-                        category.children.map(async (child) => {
-                            for (const key of this.translated_columns) {
-                                let record = await this.translationsService.findOneWhere([
-                                    {
-                                        $match: {
-                                            module: 'category',
-                                            module_id: new mongoose.Types.ObjectId(child.id),
-                                            language_id: language_id,
-                                            key: key,
-                                        }
+            //translation work
+            if(res.data) {
+                let language_id = lang ?? 1;
+                res.data = await Promise.all(
+                    res.data.map(async (category) => {
+                        for (const key of this.translated_columns) {
+                            let record = await this.translationsService.findOneWhere([
+                                {
+                                    $match: {
+                                        module: 'category',
+                                        module_id: new mongoose.Types.ObjectId(category.id),
+                                        language_id: language_id,
+                                        key: key,
                                     }
-                                ]);
+                                }
+                            ]);
 
-                                child[key] = record.value ?? child[key];
-                            }
-                            return child;
-                        })
-                    );
+                            category[key] = record.value ?? category[key];
+                        }
 
-                    return category;
-                })
-            );
+                        category.children = await Promise.all(
+                            category.children.map(async (child) => {
+                                for (const key of this.translated_columns) {
+                                    let record = await this.translationsService.findOneWhere([
+                                        {
+                                            $match: {
+                                                module: 'category',
+                                                module_id: new mongoose.Types.ObjectId(child.id),
+                                                language_id: language_id,
+                                                key: key,
+                                            }
+                                        }
+                                    ]);
+
+                                    child[key] = record.value ?? child[key];
+                                }
+                                return child;
+                            })
+                        );
+
+                        return category;
+                    })
+                );
+            }
+
+            await this.cacheManager.set('category-menu', res, 1000);
         }
 
         return {

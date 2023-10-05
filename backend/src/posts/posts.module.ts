@@ -11,9 +11,10 @@ import {categoryProviders} from "../categories/categories.provider";
 import {TranslationsModule} from "../translations/translations.module";
 import {UserPostHistoriesModule} from "../user_post_histories/user_post_histories.module";
 import {categoryPostProviders} from "../category-posts/category-posts.provider";
+import {CacheModule} from "@nestjs/cache-manager";
 
 @Module({
-    imports: [DatabaseModule, UsersModule, MediaModule, CategoriesModule, TranslationsModule, UserPostHistoriesModule],
+    imports: [DatabaseModule, UsersModule, MediaModule, CategoriesModule, TranslationsModule, UserPostHistoriesModule, CacheModule.register()],
     controllers: [PostsController],
     providers: [PostsService, ...postProviders, ...mediaProviders, ...categoryProviders, ...categoryPostProviders],
     exports: [PostsService],

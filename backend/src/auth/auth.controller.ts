@@ -31,6 +31,8 @@ import {socketIoServer} from "../main";
 import {BlockUserDto} from "./dto/block-user.dto";
 import {UserInterface} from "../users/users.schema";
 import {Model} from "mongoose";
+import {CACHE_MANAGER} from "@nestjs/cache-manager";
+import {Cache} from "cache-manager";
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -40,6 +42,8 @@ export class AuthController {
         private userService: UsersService,
         @Inject('USER_MODEL')
         private userModel: Model<UserInterface>,
+        @Inject(CACHE_MANAGER)
+        private cacheManager: Cache
     ) {}
 
     @HttpCode(HttpStatus.OK)
@@ -71,7 +75,15 @@ export class AuthController {
     @Get('me')
     @ApiBearerAuth()
     async me(@Request() req) {
-        let user = await this.authService.getUserByEmail(req.user.email);
+        let user: any = await this.cacheManager.get('profile-user-' + req.user.id);
+
+        if (user == null) {
+            user = await this.authService.getUserByEmail(req.user.email);
+
+            if (!user.error) {
+                await this.cacheManager.set('profile-user-' + req.user.id, user, 1000);
+            }
+        }
 
         return {
             success: !user.error,
